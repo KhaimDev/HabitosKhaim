@@ -96,11 +96,12 @@ export function dueHabits(key) {
 /** Registro del día; se crea si no existe (nunca borra historial). */
 export function day(key = dateKey()) {
   if (!state.history[key]) {
-    state.history[key] = { habits: {}, tasks: {}, note: null };
+    state.history[key] = { habits: {}, tasks: {}, note: null, notes: [] };
   }
   const d = state.history[key];
   d.habits ||= {};
   d.tasks ||= {};
+  if (!Array.isArray(d.notes)) d.notes = d.note ? [d.note] : [];
   return d;
 }
 
@@ -134,7 +135,10 @@ export function toggleDailyTask(id, key = dateKey()) {
 export function saveNote(key, note) {
   const d = day(key);
   const empty = !note || Object.values(note).every((v) => !String(v || "").trim());
-  d.note = empty ? null : { ...note, updated: new Date().toISOString() };
+  if (empty) return;
+  const entry = { ...note, updated: new Date().toISOString() };
+  d.notes.push(entry);
+  d.note = entry;
   save();
 }
 

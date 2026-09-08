@@ -25,7 +25,7 @@ export const Route = createFileRoute("/")({
 function Index() {
   return (
     <iframe
-      src="/app/index.html"
+      src="/index.html"
       title="Khaim · Sistema de Ejecución"
       style={{
         position: "fixed",

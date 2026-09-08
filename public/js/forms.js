@@ -11,7 +11,14 @@ function chips(list, current, attr = "value") {
 }
 
 export function habitForm(habit) {
-  const h = habit || { name: "", time: "08:00", icon: "⚡", color: COLORS[0], freq: { type: "daily" } };
+  const h = {
+    name: "",
+    time: "08:00",
+    icon: ICONS[0],
+    color: COLORS[0],
+    freq: { type: "daily" },
+    ...(habit || {}),
+  };
   const f = h.freq || { type: "daily" };
   openModal({
     title: habit ? "Editar hábito" : "Nuevo hábito",

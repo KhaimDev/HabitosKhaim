@@ -5,9 +5,23 @@ Aplicación web personal de hábitos, disciplina y progreso diario. HTML, CSS y 
 ## Contenido
 
 ```
-public/app/
-  index.html          # estructura y carga de la app
-  css/styles.css      # sistema visual (tema oscuro permanente)
+HabitosKhaim/
+  public/               # aplicación estática que se muestra al usuario
+  src/                  # envoltorio TanStack y componentes del proyecto
+  package.json          # scripts y dependencias
+  vite.config.ts        # configuración de Vite
+  README.md             # documentación del proyecto
+```
+
+### Aplicación principal
+
+Los archivos que se editan con más frecuencia están juntos y visibles dentro de `public/`:
+
+```
+public/
+  index.html           # estructura y carga de la app
+  css/
+    styles.css         # sistema visual (tema oscuro permanente)
   js/
     app.js            # arranque, navegación y eventos
     store.js          # estado + persistencia en localStorage
@@ -20,18 +34,20 @@ public/app/
     utils.js          # fechas locales, formato e iconos
 ```
 
+  La ruta de TanStack en `src/routes/index.tsx` carga `public/index.html`, por lo que ambas partes permanecen conectadas sin duplicar la aplicación.
+
 ## Uso local
 
-No requiere compilación. Abre `public/app/index.html` con un servidor estático (los módulos ES no funcionan con `file://`):
+No requiere compilación. Abre `public/index.html` con un servidor estático (los módulos ES no funcionan con `file://`):
 
 ```bash
 python3 -m http.server 8000
-# luego abre http://localhost:8000/public/app/
+# luego abre http://localhost:8000/public/
 ```
 
 ## Publicar en GitHub Pages
 
-1. Copia el contenido de `public/app/` a la raíz del repositorio (o a una carpeta `docs/`).
+1. Copia el contenido de `public/` a la raíz del repositorio (o a una carpeta `docs/`).
 2. En GitHub: **Settings → Pages → Build and deployment → Deploy from a branch**.
 3. Elige la rama `main` y la carpeta `/ (root)` o `/docs`, según dónde dejaste los archivos.
 4. Guarda. En un par de minutos tu sistema estará en `https://<usuario>.github.io/<repo>/`.

@@ -105,8 +105,8 @@ function today() {
         ${openTodos.slice(0, 5).map(todoRow).join("") || `<div class="empty">${emptyLine.todos}</div>`}
       </div>
 
-      <div class="section-title"><h2>Bitácora de hoy</h2><span>${rec.note ? "guardada" : "vacía"}</span></div>
-      <button class="btn block" data-act="go-log">${rec.note ? "Editar reflexión de hoy" : "Escribir reflexión de hoy"}</button>
+      <div class="section-title"><h2>Bitácora de hoy</h2><span>${rec.note || rec.notes?.length ? "guardada" : "vacía"}</span></div>
+      <button class="btn block" data-act="go-log">${rec.note || rec.notes?.length ? "Editar reflexión de hoy" : "Escribir reflexión de hoy"}</button>
     </aside>
   </div>`;
 }
@@ -257,10 +257,13 @@ function evolution() {
 function log() {
   const key = dateKey();
   const rec = day(key);
-  const n = rec.note || {};
+  const n = rec.note || rec.notes?.[rec.notes.length - 1] || {};
   const past = Object.entries(state.history)
-    .filter(([k, v]) => v.note && k !== key)
-    .sort((a, b) => b[0].localeCompare(a[0]))
+    .flatMap(([entryKey, value]) => {
+      const notes = Array.isArray(value.notes) ? value.notes : value.note ? [value.note] : [];
+      return notes.map((note) => ({ key: entryKey, note }));
+    })
+    .sort((a, b) => (b.note.updated || b.key).localeCompare(a.note.updated || a.key))
     .slice(0, 30);
 
   return `
@@ -278,14 +281,14 @@ function log() {
     <aside>
       <div class="section-title"><h2>Historial</h2><span>${past.length}</span></div>
       <div class="stack">
-        ${past.length ? past.map(([k, v]) => {
-          const p = dayProgress(k);
+        ${past.length ? past.map(({ key: entryKey, note }) => {
+          const p = dayProgress(entryKey);
           return `<article class="entry">
-            <h4>${longDate(k)} · ${p.done}/${p.total}</h4>
-            ${v.note.learned ? `<p><b>Aprendí:</b> ${escapeHtml(v.note.learned)}</p>` : ""}
-            ${v.note.felt ? `<p><b>Sentí:</b> ${escapeHtml(v.note.felt)}</p>` : ""}
-            ${v.note.obstacle ? `<p><b>Obstáculo:</b> ${escapeHtml(v.note.obstacle)}</p>` : ""}
-            ${v.note.better ? `<p><b>Mañana:</b> ${escapeHtml(v.note.better)}</p>` : ""}
+            <h4>${longDate(entryKey)} · ${p.done}/${p.total}</h4>
+            ${note.learned ? `<p><b>Aprendí:</b> ${escapeHtml(note.learned)}</p>` : ""}
+            ${note.felt ? `<p><b>Sentí:</b> ${escapeHtml(note.felt)}</p>` : ""}
+            ${note.obstacle ? `<p><b>Obstáculo:</b> ${escapeHtml(note.obstacle)}</p>` : ""}
+            ${note.better ? `<p><b>Mañana:</b> ${escapeHtml(note.better)}</p>` : ""}
           </article>`;
         }).join("") : `<div class="empty">${emptyLine.log}</div>`}
       </div>
