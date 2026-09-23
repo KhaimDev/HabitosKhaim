@@ -1,4 +1,4 @@
-import { load, state, subscribe, rollover, toggleHabit, toggleDailyTask, toggleTodo, snoozeAction, removeHabit, removeDailyTask, removeTodo, moveHabit } from "./store.js";
+import { load, state, subscribe, rollover, toggleHabit, toggleDailyTask, toggleTodo, snoozeAction, clearSnoozes, removeHabit, removeDailyTask, removeTodo, moveHabit } from "./store.js";
 import { VIEWS } from "./views.js";
 import { habitForm, dailyTaskForm, todoForm } from "./forms.js";
 import { exportData, importData } from "./backup.js";
@@ -44,16 +44,18 @@ function go(next) { current = next; localStorage.setItem("khaim.view", next); re
 
 function actComplete(kind, id) { kind === "habit" ? toggleHabit(id) : toggleDailyTask(id); toast("Acción cumplida"); }
 function undoComplete(kind, id) { kind === "habit" ? toggleHabit(id) : toggleDailyTask(id); toast("Marcada como pendiente"); }
+function postpone(kind, id) { snoozeAction(kind, id, 1); toast("Acción pospuesta"); }
 
 document.addEventListener("change", (event) => { if (event.target.id === "import-file" && event.target.files?.[0]) { importData(event.target.files[0]); event.target.value = ""; } });
 
 let pointerStart = null;
 document.addEventListener("pointerdown", (event) => { const card = event.target.closest("[data-card]"); if (card) { pointerStart = { card, y: event.clientY }; card.classList.add("dragging"); card.setPointerCapture?.(event.pointerId); } });
-document.addEventListener("pointermove", (event) => { if (!pointerStart) return; const move = Math.min(0, event.clientY - pointerStart.y); pointerStart.card.style.setProperty("transform", `translate3d(0, ${move}px, 42px) rotateX(${move / 18}deg) rotateY(${move / 30}deg)`, "important"); });
-document.addEventListener("pointerup", (event) => { if (!pointerStart) return; const { card, y } = pointerStart; const up = event.clientY - y < -95; pointerStart = null; card.classList.remove("dragging"); card.style.removeProperty("transform"); if (up) actComplete(card.dataset.kind, card.dataset.id); });
+document.addEventListener("pointermove", (event) => { if (!pointerStart) return; const move = event.clientY - pointerStart.y; pointerStart.card.style.setProperty("transform", `translate3d(0, ${move}px, 42px) rotateX(${move / 18}deg) rotateY(${move / 30}deg)`, "important"); });
+document.addEventListener("pointerup", (event) => { if (!pointerStart) return; const { card, y } = pointerStart; const delta = event.clientY - y; pointerStart = null; card.classList.remove("dragging"); card.style.removeProperty("transform"); if (delta < -95) actComplete(card.dataset.kind, card.dataset.id); else if (delta > 95) postpone(card.dataset.kind, card.dataset.id); });
 document.addEventListener("pointercancel", () => { if (!pointerStart) return; pointerStart.card.classList.remove("dragging"); pointerStart.card.style.removeProperty("transform"); pointerStart = null; });
 
 function beginAccess() {
+  clearSnoozes();
   document.getElementById("access-screen").classList.add("access-complete");
   setTimeout(() => { document.getElementById("access-screen").hidden = true; document.getElementById("app-shell").hidden = false; render(); }, 420);
 }

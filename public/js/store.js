@@ -141,6 +141,14 @@ export function snoozeAction(kind, id, hours, key = dateKey()) {
   save();
 }
 
+export function clearSnoozes(key = dateKey()) {
+  const record = state.history[key];
+  if (record?.snoozed) {
+    record.snoozed = {};
+    save();
+  }
+}
+
 export function actionItems(key = dateKey()) {
   const d = day(key);
   const habits = dueHabits(key).map((h) => ({

@@ -8,8 +8,7 @@ function deckCard(item) {
   if (!item) return `<article class="deck-card deck-empty"><span>✦</span><h2>Día completo</h2><p>Tu sistema está al día, Villa.</p></article>`;
   return `<article class="deck-card" data-card data-kind="${item.kind}" data-id="${item.id}" style="--card:${item.color}">
     <div class="card-sheen"></div><div class="card-top"><span>${item.kind === "habit" ? "HÁBITO" : "TAREA DIARIA"}</span><span>PENDIENTE</span></div>
-    <div class="card-icon">${item.icon}</div><h2>${escapeHtml(item.name)}</h2><p class="card-time">${item.time}</p>
-    <div class="card-hint"><span>↑</span> DESLIZA HACIA ARRIBA PARA CUMPLIR</div></article>`;
+    <div class="card-icon">${item.icon}</div><h2>${escapeHtml(item.name)}</h2><p class="card-time">${item.time}</p></article>`;
 }
 
 function home() {
@@ -20,7 +19,6 @@ function home() {
   const next = active[0];
   return `<section class="welcome"><p>${longDate(key)}</p><h1>${greeting()}, <em>Villa.</em></h1><div class="welcome-stats"><span><b>${progress.pct}%</b> completado</span><span><b>${streak.current}d</b> de racha</span></div></section>
   <section class="deck-zone"><div class="deck-label"><span>ACCIÓN ACTUAL</span><span>${progress.done}/${progress.total}</span></div><div class="deck-stack"><div class="deck-back back-2"></div><div class="deck-back back-1"></div>${deckCard(next)}</div>
-  ${next ? `<div class="deck-actions"><button data-act="snooze" data-kind="${next.kind}" data-id="${next.id}" data-hours="1">+1 HORA</button><button data-act="snooze" data-kind="${next.kind}" data-id="${next.id}" data-hours="4">+4 HORAS</button></div>` : ""}
   ${snoozed.length ? `<p class="snoozed-note">${snoozed.length} acción${snoozed.length > 1 ? "es" : ""} vuelve${snoozed.length === 1 ? "" : "n"} más tarde.</p>` : ""}</section>`;
 }
 
