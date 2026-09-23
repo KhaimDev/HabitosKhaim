@@ -167,11 +167,11 @@ html,body{width:100%;height:100%;overflow:hidden;overscroll-behavior:none}
 	.view[data-view="habits"],.view[data-view="tasks"],.view[data-view="todos"]{overflow:hidden}
 	.view[data-view="habits"] .page-title,.view[data-view="tasks"] .page-title,.view[data-view="todos"] .page-title{padding:8px 4px 10px}
 	.view[data-view="habits"] .manage-list,.view[data-view="tasks"] .manage-list,.view[data-view="todos"] .manage-list{max-height:calc(100dvh - 156px);overflow-y:auto;padding:0 2px 18px}
-	.manage-row{min-width:0;grid-template-columns:48px minmax(0,1fr) auto!important;padding:7px 6px;gap:7px;min-height:70px}
+	.manage-row{min-width:0;grid-template-columns:48px minmax(0,1fr)!important;padding:9px 8px;gap:7px;min-height:112px}
 	.manage-row h3{font-size:14px;line-height:1.12;overflow-wrap:anywhere}
 	.manage-row p{font-size:11px;margin-top:3px}
 	.manage-icon{width:42px;height:42px;font-size:20px}
-	.row-buttons{gap:4px;flex-wrap:nowrap}
+	.row-buttons{grid-column:1 / -1;justify-content:flex-end;gap:5px;flex-wrap:nowrap;padding-top:2px}
 	.row-buttons button{width:34px;height:34px;flex:0 0 34px}
 	.row-buttons button svg{width:15px;height:15px}
 }

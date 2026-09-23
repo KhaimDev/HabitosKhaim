@@ -15,15 +15,7 @@ function renderNav() {
 function renderHeader() {
   document.getElementById("app-header").innerHTML = "";
 }
-function render() { view().dataset.view = current; view().innerHTML = VIEWS[current].render(); renderNav(); renderHeader(); }
-function go(next) { current = next; localStorage.setItem("khaim.view", next); render(); window.scrollTo({ top: 0, behavior: "smooth" }); }
-
-function actComplete(kind, id) { kind === "habit" ? toggleHabit(id) : toggleDailyTask(id); toast("Acción cumplida"); }
-function undoComplete(kind, id) { kind === "habit" ? toggleHabit(id) : toggleDailyTask(id); toast("Marcada como pendiente"); }
-
-document.addEventListener("click", (event) => {
-  const tab = event.target.closest("[data-view]"); if (tab) return go(tab.dataset.view);
-  const button = event.target.closest("[data-act]"); if (!button) return;
+function runAction(button) {
   const { act, id, kind, hours } = button.dataset;
   if (act === "complete") return actComplete(kind, id);
   if (act === "undo-complete") return undoComplete(kind, id);
@@ -42,7 +34,17 @@ document.addEventListener("click", (event) => {
   if (act === "move-down") return moveHabit(id, 1);
   if (act === "export") return exportData();
   if (act === "import") return document.getElementById("import-file")?.click();
-});
+}
+function bindViewActions() {
+  document.querySelectorAll("#tabbar [data-view]").forEach((tab) => tab.addEventListener("click", () => go(tab.dataset.view)));
+  document.querySelectorAll("#view [data-act]").forEach((button) => button.addEventListener("click", (event) => { event.stopPropagation(); runAction(button); }));
+}
+function render() { view().dataset.view = current; view().innerHTML = VIEWS[current].render(); renderNav(); renderHeader(); bindViewActions(); }
+function go(next) { current = next; localStorage.setItem("khaim.view", next); render(); window.scrollTo({ top: 0, behavior: "smooth" }); }
+
+function actComplete(kind, id) { kind === "habit" ? toggleHabit(id) : toggleDailyTask(id); toast("Acción cumplida"); }
+function undoComplete(kind, id) { kind === "habit" ? toggleHabit(id) : toggleDailyTask(id); toast("Marcada como pendiente"); }
+
 document.addEventListener("change", (event) => { if (event.target.id === "import-file" && event.target.files?.[0]) { importData(event.target.files[0]); event.target.value = ""; } });
 
 let pointerStart = null;
