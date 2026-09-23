@@ -13,7 +13,7 @@ function renderNav() {
   document.getElementById("tabbar").innerHTML = Object.entries(VIEWS).map(([key, item]) => `<button class="tab ${key === current ? "active" : ""}" data-view="${key}"><span>${item.icon}</span>${item.label}</button>`).join("");
 }
 function renderHeader() {
-  document.getElementById("app-header").innerHTML = `<div class="mini-brand"><span class="mini-logo">V</span><span>VILLA</span></div><span class="mini-time">${nowTime()}</span>`;
+  document.getElementById("app-header").innerHTML = "";
 }
 function render() { view().dataset.view = current; view().innerHTML = VIEWS[current].render(); renderNav(); renderHeader(); }
 function go(next) { current = next; localStorage.setItem("khaim.view", next); render(); window.scrollTo({ top: 0, behavior: "smooth" }); }
