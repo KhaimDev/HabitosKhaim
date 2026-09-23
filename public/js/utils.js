@@ -61,7 +61,7 @@ export function escapeHtml(s = "") {
   })[c]);
 }
 
-export const COLORS = ["#7c5cff", "#ffb545", "#4be3a2", "#4aa8ff", "#ff6b6b", "#f472d0"];
+export const COLORS = ["#69ffac", "#c55cff", "#39d98a", "#9b42ff", "#b7ffcf", "#8b2cff"];
 export const ICONS = ["⚡", "🏋", "📘", "💻", "🧠", "🌅", "🧘", "💧", "🌙", "🎯", "✍", "🍽"];
 
 /** Iconos SVG inline (sin dependencias) */

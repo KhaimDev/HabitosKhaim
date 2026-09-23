@@ -6,8 +6,11 @@ import { dateKey, addDays, lastDays } from "./utils.js";
 export function dayProgress(key) {
   const due = dueHabits(key);
   const rec = state.history[key];
-  const done = due.filter((h) => rec?.habits?.[h.id]?.done).length;
-  const total = due.length;
+  const habitsDone = due.filter((h) => rec?.habits?.[h.id]?.done).length;
+  const tasks = state.dailyTasks || [];
+  const tasksDone = tasks.filter((t) => rec?.tasks?.[t.id]).length;
+  const done = habitsDone + tasksDone;
+  const total = due.length + tasks.length;
   return { done, total, pct: total ? Math.round((done / total) * 100) : 0, complete: total > 0 && done === total };
 }
 

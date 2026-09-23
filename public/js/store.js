@@ -5,17 +5,17 @@ import { uid, dateKey, parseKey, addDays } from "./utils.js";
 const KEY = "khaim.execution.system.v1";
 
 const seedHabits = () => [
-  { id: uid(), name: "Levantarme", time: "07:00", icon: "🌅", color: "#ffb545", freq: { type: "daily" }, created: dateKey() },
-  { id: uid(), name: "Ejercicio", time: "07:15", icon: "🏋", color: "#4be3a2", freq: { type: "daily" }, created: dateKey() },
-  { id: uid(), name: "Estudiar IA", time: "09:00", icon: "🧠", color: "#7c5cff", freq: { type: "daily" }, created: dateKey() },
-  { id: uid(), name: "Práctica de programación", time: "14:00", icon: "💻", color: "#4aa8ff", freq: { type: "daily" }, created: dateKey() },
-  { id: uid(), name: "Leer", time: "18:00", icon: "📘", color: "#f472d0", freq: { type: "daily" }, created: dateKey() },
-  { id: uid(), name: "Revisar mi día", time: "21:00", icon: "🌙", color: "#7c5cff", freq: { type: "daily" }, created: dateKey() },
+  { id: uid(), name: "Levantarme", time: "07:00", icon: "🌅", color: "#69ffac", freq: { type: "daily" }, created: dateKey() },
+  { id: uid(), name: "Ejercicio", time: "07:15", icon: "🏋", color: "#39d98a", freq: { type: "daily" }, created: dateKey() },
+  { id: uid(), name: "Estudiar IA", time: "09:00", icon: "🧠", color: "#c55cff", freq: { type: "daily" }, created: dateKey() },
+  { id: uid(), name: "Práctica de programación", time: "14:00", icon: "💻", color: "#9b42ff", freq: { type: "daily" }, created: dateKey() },
+  { id: uid(), name: "Leer", time: "18:00", icon: "📘", color: "#b7ffcf", freq: { type: "daily" }, created: dateKey() },
+  { id: uid(), name: "Revisar mi día", time: "21:00", icon: "🌙", color: "#8b2cff", freq: { type: "daily" }, created: dateKey() },
 ];
 
 function blank() {
   return {
-    version: 1,
+    version: 2,
     owner: "Khaim",
     habits: seedHabits(),
     dailyTasks: [
@@ -96,11 +96,12 @@ export function dueHabits(key) {
 /** Registro del día; se crea si no existe (nunca borra historial). */
 export function day(key = dateKey()) {
   if (!state.history[key]) {
-    state.history[key] = { habits: {}, tasks: {}, note: null, notes: [] };
+    state.history[key] = { habits: {}, tasks: {}, snoozed: {}, note: null, notes: [] };
   }
   const d = state.history[key];
   d.habits ||= {};
   d.tasks ||= {};
+  d.snoozed ||= {};
   if (!Array.isArray(d.notes)) d.notes = d.note ? [d.note] : [];
   return d;
 }
@@ -122,6 +123,7 @@ export function toggleHabit(id, key = dateKey()) {
   const d = day(key);
   if (d.habits[id]?.done) delete d.habits[id];
   else d.habits[id] = { done: true, at: new Date().toISOString() };
+  delete d.snoozed[`habit:${id}`];
   save();
 }
 
@@ -129,7 +131,27 @@ export function toggleDailyTask(id, key = dateKey()) {
   const d = day(key);
   d.tasks[id] = !d.tasks[id];
   if (!d.tasks[id]) delete d.tasks[id];
+  delete d.snoozed[`task:${id}`];
   save();
+}
+
+export function snoozeAction(kind, id, hours, key = dateKey()) {
+  const d = day(key);
+  d.snoozed[`${kind}:${id}`] = new Date(Date.now() + hours * 3600000).toISOString();
+  save();
+}
+
+export function actionItems(key = dateKey()) {
+  const d = day(key);
+  const habits = dueHabits(key).map((h) => ({
+    id: h.id, kind: "habit", name: h.name, time: h.time, icon: h.icon || "✦", color: h.color || "#39a7ff",
+    done: !!d.habits[h.id]?.done, snoozedUntil: d.snoozed[`habit:${h.id}`] || null,
+  }));
+  const tasks = state.dailyTasks.map((t) => ({
+    id: t.id, kind: "task", name: t.name, time: "TAREA DIARIA", icon: "✓", color: "#b15cff",
+    done: !!d.tasks[t.id], snoozedUntil: d.snoozed[`task:${t.id}`] || null,
+  }));
+  return [...habits, ...tasks];
 }
 
 export function saveNote(key, note) {

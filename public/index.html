@@ -3,38 +3,40 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>Khaim · Sistema de Ejecución</title>
-    <meta name="description" content="Sistema personal de hábitos, disciplina y progreso diario de Khaim. Funciona sin servidor y guarda todo en tu navegador." />
-    <meta name="theme-color" content="#08080c" />
+    <title>Villa</title>
+    <meta name="description" content="Sistema personal de Villa." />
+    <meta name="theme-color" content="#050509" />
+    <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="./css/styles.css" />
   </head>
   <body>
-    <div class="grain" aria-hidden="true"></div>
-
-    <header class="topbar">
-      <div class="brand">
-        <span class="brand-mark">K</span>
-        <div class="brand-text">
-          <strong>Sistema de Ejecución</strong>
-          <span id="topbar-date">—</span>
-        </div>
+    <section class="access-screen" id="access-screen" aria-label="Acceso personal">
+      <video class="access-video" autoplay muted loop playsinline preload="metadata" aria-hidden="true">
+        <source src="./assets/console-bg.mp4" type="video/mp4" />
+      </video>
+      <div class="video-shade" aria-hidden="true"></div>
+      <div class="aurora aurora-a" aria-hidden="true"></div>
+      <div class="aurora aurora-b" aria-hidden="true"></div>
+      <div class="access-name">VILLA</div>
+      <div class="access-status" id="access-status">INICIANDO SISTEMA PERSONAL</div>
+      <div class="access-copy">
+        <p id="access-message">SOLICITANDO ACCESO</p>
       </div>
-      <div class="topbar-right">
-        <div class="clock" id="clock">--:--</div>
-        <div class="ring" id="topbar-ring" style="--p:0">
-          <span id="topbar-pct">0%</span>
-        </div>
-      </div>
-    </header>
+      <button class="fingerprint" id="fingerprint" aria-label="Solicitar acceso">
+        <span class="fingerprint-rings" aria-hidden="true"></span>
+        <img src="./assets/fingerprint.png" alt="" />
+      </button>
+      <div class="access-footer"><span>ESTADO: VULNERABLE</span></div>
+    </section>
 
-    <nav class="sidenav" id="sidenav"></nav>
-
-    <main id="view" class="view" tabindex="-1"></main>
-
-    <nav class="tabbar" id="tabbar"></nav>
+    <main id="app-shell" class="app-shell" hidden>
+      <header class="app-header" id="app-header"></header>
+      <main id="view" class="view" tabindex="-1"></main>
+      <nav class="tabbar" id="tabbar"></nav>
+    </main>
 
     <div class="modal-root" id="modal-root" hidden></div>
     <div class="toast-root" id="toast-root" aria-live="polite"></div>
