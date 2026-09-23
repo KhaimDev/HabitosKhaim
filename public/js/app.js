@@ -15,7 +15,7 @@ function renderNav() {
 function renderHeader() {
   document.getElementById("app-header").innerHTML = `<div class="mini-brand"><span class="mini-logo">V</span><span>VILLA</span></div><span class="mini-time">${nowTime()}</span>`;
 }
-function render() { view().innerHTML = VIEWS[current].render(); renderNav(); renderHeader(); }
+function render() { view().dataset.view = current; view().innerHTML = VIEWS[current].render(); renderNav(); renderHeader(); }
 function go(next) { current = next; localStorage.setItem("khaim.view", next); render(); window.scrollTo({ top: 0, behavior: "smooth" }); }
 
 function actComplete(kind, id) { kind === "habit" ? toggleHabit(id) : toggleDailyTask(id); toast("Acción cumplida"); }
@@ -46,10 +46,10 @@ document.addEventListener("click", (event) => {
 document.addEventListener("change", (event) => { if (event.target.id === "import-file" && event.target.files?.[0]) { importData(event.target.files[0]); event.target.value = ""; } });
 
 let pointerStart = null;
-document.addEventListener("pointerdown", (event) => { const card = event.target.closest("[data-card]"); if (card) { pointerStart = { card, y: event.clientY }; card.setPointerCapture?.(event.pointerId); } });
+document.addEventListener("pointerdown", (event) => { const card = event.target.closest("[data-card]"); if (card) { pointerStart = { card, y: event.clientY }; card.classList.add("dragging"); card.setPointerCapture?.(event.pointerId); } });
 document.addEventListener("pointermove", (event) => { if (!pointerStart) return; const move = Math.min(0, event.clientY - pointerStart.y); pointerStart.card.style.setProperty("transform", `translate3d(0, ${move}px, 42px) rotateX(${move / 18}deg) rotateY(${move / 30}deg)`, "important"); });
-document.addEventListener("pointerup", (event) => { if (!pointerStart) return; const { card, y } = pointerStart; const up = event.clientY - y < -95; pointerStart = null; card.style.removeProperty("transform"); if (up) actComplete(card.dataset.kind, card.dataset.id); });
-document.addEventListener("pointercancel", () => { if (!pointerStart) return; pointerStart.card.style.removeProperty("transform"); pointerStart = null; });
+document.addEventListener("pointerup", (event) => { if (!pointerStart) return; const { card, y } = pointerStart; const up = event.clientY - y < -95; pointerStart = null; card.classList.remove("dragging"); card.style.removeProperty("transform"); if (up) actComplete(card.dataset.kind, card.dataset.id); });
+document.addEventListener("pointercancel", () => { if (!pointerStart) return; pointerStart.card.classList.remove("dragging"); pointerStart.card.style.removeProperty("transform"); pointerStart = null; });
 
 function beginAccess() {
   document.getElementById("access-screen").classList.add("access-complete");
@@ -62,6 +62,8 @@ if (accessVideo) accessVideo.playbackRate = 1.25;
 const startHold = () => { if (holding) return; holding = true; fingerprint.classList.add("holding"); document.getElementById("access-status").textContent = "VERIFICANDO ACCESO"; holdTimer = setTimeout(beginAccess, 3000); };
 const stopHold = () => { if (!holding) return; holding = false; clearTimeout(holdTimer); fingerprint.classList.remove("holding"); document.getElementById("access-status").textContent = "INICIANDO SISTEMA PERSONAL"; };
 fingerprint.addEventListener("pointerdown", startHold); ["pointerup", "pointercancel", "pointerleave"].forEach((name) => fingerprint.addEventListener(name, stopHold));
+fingerprint.addEventListener("contextmenu", (event) => event.preventDefault());
+fingerprint.addEventListener("dragstart", (event) => event.preventDefault());
 
 load();
 if (navigator.storage?.persist) navigator.storage.persist().catch(() => {});
